@@ -1,6 +1,7 @@
 package com.zeeecom.journalEntry.Services;
 
 import com.zeeecom.journalEntry.WeatherApiResponse.WeatherResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,8 @@ public class WeatherService {
         this.restTemplate=restTemplate;
     }
 
-    private final String apiKey="6b384b4f4bc827444186c71e82877e12";
+    @Value("${weather.api.key}")
+    private String apiKey;
     private static final String API="http://api.weatherstack.com/current?access_key=API_Key&query=CITY";
 
     public WeatherResponse getWeather(String city){
