@@ -1,0 +1,55 @@
+package com.zeeecom.journalEntry.Services;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import com.zeeecom.journalEntry.Repository.UserRepo;
+import com.zeeecom.journalEntry.entity.Users;
+
+@Component
+public class UserServices {
+    
+    @Autowired
+    private UserRepo userRepo;
+
+    private static final PasswordEncoder encrypter=new BCryptPasswordEncoder();
+
+    public void SaveUser(Users user) {
+        userRepo.save(user);
+    }
+
+    public void SaveNewUser(Users user) {
+        user.setPassword(encrypter.encode(user.getPassword()));
+        user.setRoles(Arrays.asList("USER"));
+        userRepo.save(user);
+    }
+
+    public List<Users> getAllUser() {
+        return userRepo.findAll();
+    }
+
+    public Optional<Users> find_User_by_id(ObjectId id) {
+        return userRepo.findById(id);
+    }
+
+    public void delete_User_by_id(ObjectId id) {
+        userRepo.deleteById(id);
+    }
+    
+    public Users find_by_userName(String userName){
+        return userRepo.findByuserName(userName);
+    }
+
+    public void SaveAdminUser(Users user) {
+        user.setPassword(encrypter.encode(user.getPassword()));
+        user.setRoles(Arrays.asList("USER","ADMIN"));
+        userRepo.save(user);
+    }
+}

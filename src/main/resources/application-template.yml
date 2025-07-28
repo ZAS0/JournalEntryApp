@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: JournalApp
+  data:
+    mongodb:
+      uri: mongodb+srv://<USERNAME>:<PASSWORD>@cluster0.mongodb.net/<DBNAME>
+      database: journal_dB
+      auto-index-creation: true
+
+server:
+  port: 8080 #you can also make it 8081 as per your need
