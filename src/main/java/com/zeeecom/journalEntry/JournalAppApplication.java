@@ -1,4 +1,5 @@
 package com.zeeecom.journalEntry;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -12,18 +13,18 @@ import org.springframework.web.client.RestTemplate;
 @EnableTransactionManagement
 public class JournalAppApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(JournalAppApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(JournalAppApplication.class, args);
+    }
 
-	@Bean
-	public PlatformTransactionManager for_transaction(MongoDatabaseFactory dbfactory){
-		return new MongoTransactionManager(dbfactory);
-	}
+    @Bean
+    public PlatformTransactionManager for_transaction(MongoDatabaseFactory dbfactory) {
+        return new MongoTransactionManager(dbfactory);
+    }
 
-	@Bean
-	public RestTemplate restTemplate(){
-		return new RestTemplate();
-	}
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
 }

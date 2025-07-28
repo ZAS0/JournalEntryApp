@@ -3,19 +3,17 @@ package com.zeeecom.journalEntry.Services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import com.zeeecom.journalEntry.entity.Users;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+
 
 import com.zeeecom.journalEntry.Repository.JournalEntryRepo;
 import com.zeeecom.journalEntry.entity.JournalEntry;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Service
 public class JournalEntryServices {
 
     @Autowired
