@@ -1,5 +1,6 @@
 package com.zeeecom.journalEntry.Controller;
 
+import com.zeeecom.journalEntry.Cache.AppCache;
 import com.zeeecom.journalEntry.Services.JournalEntryServices;
 import com.zeeecom.journalEntry.Services.UserServices;
 import com.zeeecom.journalEntry.entity.Users;
@@ -18,8 +19,14 @@ public class AdminController {
     //So manually we have to make atleast one user admin in mongo atlas
     //thereafter use add-admin()
 
-    @Autowired
     UserServices userServices;
+    AppCache appCache;
+
+    public AdminController(UserServices userServices,AppCache appCache){
+        this.userServices=userServices;
+        this.appCache=appCache;
+    }
+
 
     //This gives all the user details
     @GetMapping("/all-user")
@@ -34,6 +41,11 @@ public class AdminController {
     @PostMapping("/create-admin-user")
     public void create_admin_user(@RequestBody Users users){
         userServices.SaveAdminUser(users);
+    }
+
+    @GetMapping("/clean-cache")
+    public void cleanCache(){
+        appCache.init();
     }
 
 }
