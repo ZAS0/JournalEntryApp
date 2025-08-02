@@ -7,5 +7,17 @@ spring:
       database: journal_dB
       auto-index-creation: true
 
+  mail:
+    host: smtp.gmail.com #if using gmail
+    port: 587 #for authorised port for not authorised use 25
+    username: your-email
+    password: your-pswd-or-app-pswd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 server:
   port: 8080 #you can also make it 8081 as per your need

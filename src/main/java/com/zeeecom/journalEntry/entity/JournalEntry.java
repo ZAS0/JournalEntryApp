@@ -1,5 +1,6 @@
 package com.zeeecom.journalEntry.entity;
 
+import com.zeeecom.journalEntry.Enums.Sentiment;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -28,5 +29,6 @@ public class JournalEntry {
     private String name;
     private String content;
     private LocalDateTime date;
+    private Sentiment sentiment;
 
 }

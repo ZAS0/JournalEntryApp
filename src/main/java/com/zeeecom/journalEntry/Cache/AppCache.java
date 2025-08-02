@@ -25,6 +25,9 @@ public class AppCache {
 
     public  Map<String,String> appCache;
 
+
+    //This method helps in re-initialization of hashMap without restarting the application
+    //If any changes made in db collection directly So instead of restarting use this
     @PostConstruct
     public void init(){
         appCache=new HashMap<>();

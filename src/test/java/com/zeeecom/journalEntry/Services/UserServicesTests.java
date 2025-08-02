@@ -9,8 +9,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.User;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 //This ensures that the app start and all thoes config that was present
