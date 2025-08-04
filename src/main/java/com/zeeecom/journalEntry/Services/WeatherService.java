@@ -12,22 +12,38 @@ import org.springframework.web.client.RestTemplate;
 public class WeatherService {
     private RestTemplate restTemplate;
     private AppCache appCacheObj;
+    private RedisService redisService;
 
     //Constructor injection
-    public WeatherService(RestTemplate restTemplate,AppCache appCacheObj){
+    public WeatherService(RestTemplate restTemplate,AppCache appCacheObj,RedisService redisService){
         this.restTemplate=restTemplate;
         this.appCacheObj=appCacheObj;
+        this.redisService=redisService;
     }
 
     @Value("${weather.api.key}")
     private String apiKey;
 
     public WeatherResponse getWeather(String city){
-        String finalAPI=appCacheObj.appCache.get(AppCache.Keys.WEATHER_API.toString()).replace("<apiKey>",apiKey).replace("<city>",city);
+        //Getting Entry from cache if present
+        WeatherResponse weatherResponse = redisService.get("weather_of_" + city, WeatherResponse.class);
+        if (weatherResponse != null){
+            return weatherResponse;
+        }
+        else {
+            String finalAPI=appCacheObj.appCache.get(AppCache.Keys.WEATHER_API.toString()).replace("<apiKey>",apiKey).replace("<city>",city);
 
-        //This is to consume the API
-        ResponseEntity<WeatherResponse> response = restTemplate.exchange(finalAPI, HttpMethod.GET, null, WeatherResponse.class);
-        WeatherResponse body = response.getBody();
-        return body;
+            //This is to consume the API
+            ResponseEntity<WeatherResponse> response = restTemplate.exchange(finalAPI, HttpMethod.GET, null, WeatherResponse.class);
+            WeatherResponse body = response.getBody();
+
+            if (body != null){
+                redisService.set("weather_of_"+city,body,10); //adding to cache if not present in cache
+            }
+            return body;
+        }
+
+
+
     }
 }
