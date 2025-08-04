@@ -18,9 +18,15 @@ spring:
           auth: true
           starttls:
             enable: true
+
+  #This is for local redis
   redis:
     host: localhost
     port: 6379
+
+  #This is for redis Cloud
+  #redis:
+    #url: #paste your redis cloud URL
 
 server:
   port: 8080 #you can also make it 8081 as per your need
