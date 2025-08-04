@@ -15,8 +15,8 @@ public class RedisConfig {
         RedisTemplate redisTemplate=new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
 
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());  //Changing Serializer to make redis-cli compatible with this
+        redisTemplate.setValueSerializer(new StringRedisSerializer()); //Changing Serializer to make redis-cli compatible with this
         return redisTemplate;
     }
 }

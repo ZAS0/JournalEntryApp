@@ -12,14 +12,17 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class RedisService {
 
-    @Autowired
     private RedisTemplate redisTemplate;
+
+    public RedisService(RedisTemplate redisTemplate){
+        this.redisTemplate=redisTemplate;
+    }
 
     public <T> T get(String key, Class<T> entityClass) {
         try {
             Object o = redisTemplate.opsForValue().get(key);
-            ObjectMapper mapper = new ObjectMapper(); //This is to map the Object to a pojo
-            return mapper.readValue(o.toString(), entityClass); //Mapping object to pojo
+            ObjectMapper mapper = new ObjectMapper(); //This is to change JSON Strings to Java Object
+            return mapper.readValue(o.toString(), entityClass); //Mapping object to pojo so it can be converted to the class
         } catch (Exception e) {
             log.error("An error Occurred", e);
             return null;
