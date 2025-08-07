@@ -5,6 +5,8 @@ import com.zeeecom.journalEntry.Enums.Sentiment;
 import com.zeeecom.journalEntry.Services.EmailService;
 import com.zeeecom.journalEntry.entity.JournalEntry;
 import com.zeeecom.journalEntry.entity.Users;
+import com.zeeecom.journalEntry.model.SentimentData;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -19,10 +21,12 @@ public class UserScheduler {
 
     private EmailService emailService;
     private UserRepositoryImpl userRepository;
+    private KafkaTemplate<String, SentimentData> kafkaTemplate;
 
-    public UserScheduler(EmailService emailService,UserRepositoryImpl userRepository){
+    public UserScheduler(EmailService emailService,UserRepositoryImpl userRepository,KafkaTemplate<String,SentimentData> kafkaTemplate){
         this.emailService=emailService;
         this.userRepository=userRepository;
+        this.kafkaTemplate=kafkaTemplate;
     }
 
     //@Scheduled(cron ="0 * * ? * *") --for every second
@@ -47,7 +51,8 @@ public class UserScheduler {
                 }
             }
             if (mostFrequentSentiment != null){
-                emailService.sendEmail(user.getEmail(),"Sentiment for last 7 days",mostFrequentSentiment.toString());
+                SentimentData sentimentData = SentimentData.builder().email(user.getEmail()).sentiment("Sentiment for last 7 dyas: " + mostFrequentSentiment).build();
+                kafkaTemplate.send("weekly-sentiments",sentimentData.getEmail(),sentimentData);
             }
         }
     }
