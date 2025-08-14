@@ -4,6 +4,8 @@ import com.zeeecom.journalEntry.Services.UserDetailsServiceIMP;
 import com.zeeecom.journalEntry.Services.UserServices;
 import com.zeeecom.journalEntry.entity.Users;
 import com.zeeecom.journalEntry.utils.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/public")
 @Slf4j
+@Tag(name = "Public APIs",description = "For First Time Visit,Open to all Without Auth")
 public class PublicController {
 
     private UserServices userServices;
@@ -31,16 +34,19 @@ public class PublicController {
     }
 
     @GetMapping("/health-check")
+    @Operation(summary = "To check if the App is running smoothly")
     public String health_check(){
         return "OK";
     }
 
     @PostMapping("/signup")
+    @Operation(summary = "Sign-Up for a new User")
     public void signup(@RequestBody Users user ) {
         userServices.SaveNewUser(user);
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Login for an existing user")
     public ResponseEntity<String> login(@RequestBody Users user ) {
         try{
             authenticationManager.authenticate(

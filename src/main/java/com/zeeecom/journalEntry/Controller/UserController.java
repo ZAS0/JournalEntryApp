@@ -3,6 +3,8 @@ package com.zeeecom.journalEntry.Controller;
 import com.zeeecom.journalEntry.Repository.UserRepo;
 import com.zeeecom.journalEntry.Services.WeatherService;
 import com.zeeecom.journalEntry.WeatherApiResponse.WeatherResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import com.zeeecom.journalEntry.entity.Users;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "User APIs",description = "Read,Update and Delete User")
 public class UserController {
 
     private UserServices userServices;
@@ -37,6 +40,7 @@ public class UserController {
     //}
 
     @GetMapping()
+    @Operation(summary = "To Greet an User with Weather ForeCast")
     public ResponseEntity<?> greetings(){
         Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
         String userName=authentication.getName();
@@ -49,6 +53,7 @@ public class UserController {
     }
 
     @PutMapping()
+    @Operation(summary = "Update an Existing User")
     public ResponseEntity<HttpStatus> updateUser(@RequestBody Users user){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName=authentication.getName();
@@ -69,6 +74,7 @@ public class UserController {
     }
 
     @DeleteMapping()
+    @Operation(summary = "Delete an Existing User")
     public ResponseEntity<?> deleteUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         userRepo.deleteByUserName(authentication.getName());
