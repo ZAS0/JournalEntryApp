@@ -1,83 +1,90 @@
 package com.zeeecom.journalEntry.Controller;
 
+import com.zeeecom.journalEntry.DTOs.UserDto;
+import com.zeeecom.journalEntry.Mappers.UserMapper;
 import com.zeeecom.journalEntry.Repository.UserRepo;
+import com.zeeecom.journalEntry.Services.UserServices;
 import com.zeeecom.journalEntry.Services.WeatherService;
 import com.zeeecom.journalEntry.WeatherApiResponse.WeatherResponse;
+import com.zeeecom.journalEntry.entity.Users;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import com.zeeecom.journalEntry.Services.UserServices;
-import com.zeeecom.journalEntry.entity.Users;
-
 @RestController
 @RequestMapping("/users")
-@Tag(name = "User APIs",description = "Read,Update and Delete User")
+@RequiredArgsConstructor
+@Tag(name = "User APIs", description = "Read, Update and Delete User")
 public class UserController {
 
-    private UserServices userServices;
-    private WeatherService weatherService;
+    private final UserServices userServices;
+    private final WeatherService weatherService;
+    private final UserMapper userMapper;
+    private final UserRepo userRepo;
 
-    //Dependency Injection -- not a good practice
-    @Autowired
-    private UserRepo userRepo; //Creating an obj of UsersServices
-
-    //Constructor Injection -- best practice
-    public UserController(UserServices userServices,WeatherService weatherService){
-        this.userServices=userServices;
-        this.weatherService=weatherService;
+    @GetMapping
+    @Operation(summary = "Greet the logged-in user with current weather",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Greeting message"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
+            })
+    public ResponseEntity<String> greetings() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        WeatherResponse weather = weatherService.getWeather("Sydney");
+        String msg = (weather != null)
+                ? ", weather feels like " + weather.getCurrent().getFeelsLike()
+                : "";
+        return ResponseEntity.ok("Hi " + userName + msg);
     }
 
+    @PutMapping
+    @Operation(summary = "Update the logged-in user's details",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Updated user details",
+                    required = true,
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserDto.class))),
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "User updated successfully"),
+                    @ApiResponse(responseCode = "404", description = "User not found")
+            })
+    public ResponseEntity<Void> updateUser(@RequestBody UserDto userDto) {
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users userInDb = userServices.find_by_userName(loggedInUser);
 
-    //@GetMapping("/{Username}")
-    //public Users get_user_by_username(@PathVariable String Username){
-      //  return userServices.findByUsername(Username);
-    //}
-
-    @GetMapping()
-    @Operation(summary = "To Greet an User with Weather ForeCast")
-    public ResponseEntity<?> greetings(){
-        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
-        String userName=authentication.getName();
-        WeatherResponse responseFromApi = weatherService.getWeather("Sydney");
-        String greetings="";
-        if (responseFromApi != null){
-            greetings=",weather feels like "+responseFromApi.getCurrent().getFeelsLike();
-        }
-        return new ResponseEntity<>("Hi "+userName+greetings , HttpStatus.OK);
-    }
-
-    @PutMapping()
-    @Operation(summary = "Update an Existing User")
-    public ResponseEntity<HttpStatus> updateUser(@RequestBody Users user){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName=authentication.getName();
-        //This finds the user by username in DB
-        Users userInDb=userServices.find_by_userName(userName);
-        
         if (userInDb != null) {
-            //This set the username to new username if given
-            userInDb.setUserName(user.getUserName());
+            // Update only provided fields
+            if (userDto.userName() != null && !userDto.userName().isEmpty()) {
+                userInDb.setUserName(userDto.userName());
+            }
+            if (userDto.password() != null && !userDto.password().isEmpty()) {
+                userInDb.setPassword(userDto.password());
+            }
+            if (userDto.email() != null && !userDto.email().isEmpty()) {
+                userInDb.setEmail(userDto.email());
+            }
+            userInDb.setSentimentAnalysis(userDto.sentimentAnalysis());
 
-            //This set the passwd to new passwd if given
-            userInDb.setPassword(user.getPassword());
-            
-            //This overwrites the user in Db which have same id as userInDB 
             userServices.SaveNewUser(userInDb);
+            return ResponseEntity.noContent().build();
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping()
-    @Operation(summary = "Delete an Existing User")
-    public ResponseEntity<?> deleteUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        userRepo.deleteByUserName(authentication.getName());
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping
+    @Operation(summary = "Delete the currently logged-in user",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "User deleted successfully")
+            })
+    public ResponseEntity<Void> deleteUser() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        userRepo.deleteByUserName(userName);
+        return ResponseEntity.noContent().build();
     }
 }
