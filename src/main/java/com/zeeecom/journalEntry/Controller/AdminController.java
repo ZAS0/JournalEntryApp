@@ -1,6 +1,8 @@
 package com.zeeecom.journalEntry.Controller;
 
 import com.zeeecom.journalEntry.Cache.AppCache;
+import com.zeeecom.journalEntry.DTOs.UserDto;
+import com.zeeecom.journalEntry.Mappers.UserMapper;
 import com.zeeecom.journalEntry.Services.UserServices;
 import com.zeeecom.journalEntry.entity.Users;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,10 +24,12 @@ public class AdminController {
 
     private final UserServices userServices;
     private final AppCache appCache;
+    private final UserMapper userMapper;
 
-    public AdminController(UserServices userServices, AppCache appCache) {
+    public AdminController(UserServices userServices, AppCache appCache, UserMapper userMapper) {
         this.userServices = userServices;
         this.appCache = appCache;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/all-user")
@@ -52,8 +56,10 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "Invalid user data supplied",
                     content = @Content)
     })
-    public void createAdminUser(@RequestBody Users users) {
+    public ResponseEntity<Void> createAdminUser(@RequestBody UserDto userDto) {
+        Users users = userMapper.toEntity(userDto);
         userServices.SaveAdminUser(users);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/clean-cache")
