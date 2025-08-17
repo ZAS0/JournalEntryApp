@@ -5,18 +5,16 @@ import com.zeeecom.journalEntry.DTOs.JournalEntryRequestDto;
 import com.zeeecom.journalEntry.entity.JournalEntry;
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface JournalEntryMapper {
 
-    @Mapping(source = "id", target = "id", qualifiedByName = "objectIdToString")
     JournalEntryDto toDTO(JournalEntry entry);
 
-    @Mapping(source = "id", target = "id", qualifiedByName = "stringToObjectId")
     JournalEntry toEntity(JournalEntryDto dto);
 
+    // For request DTO, ignore 'id' (only set name/content/sentiment)
     JournalEntry toEntity(JournalEntryRequestDto dto);
 
     @Named("objectIdToString")

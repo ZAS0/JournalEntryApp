@@ -1,12 +1,10 @@
 package com.zeeecom.journalEntry.Controller;
 
 import com.zeeecom.journalEntry.Cache.AppCache;
-import com.zeeecom.journalEntry.Services.JournalEntryServices;
 import com.zeeecom.journalEntry.Services.UserServices;
 import com.zeeecom.journalEntry.entity.Users;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
