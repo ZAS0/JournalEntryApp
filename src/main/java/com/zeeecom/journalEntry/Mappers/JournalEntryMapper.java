@@ -17,6 +17,7 @@ public interface JournalEntryMapper {
     @Mapping(source = "id", target = "id", qualifiedByName = "stringToObjectId")
     JournalEntry toEntity(JournalEntryDto dto);
 
+    // For request DTO, ignore 'id' (only set name/content/sentiment)
     JournalEntry toEntity(JournalEntryRequestDto dto);
 
     @Named("objectIdToString")
