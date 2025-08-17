@@ -3,6 +3,8 @@ package com.zeeecom.journalEntry.Services;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,6 +13,7 @@ import com.zeeecom.journalEntry.Repository.UserRepo;
 import com.zeeecom.journalEntry.entity.Users;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class UserServices {
     
@@ -50,4 +53,23 @@ public class UserServices {
         user.setRoles(Arrays.asList("USER","ADMIN"));
         userRepo.save(user);
     }
+
+    public boolean deleteUserByUsername(String username) {
+        try {
+            Users user = find_by_userName(username);
+            if (user != null) {
+                ObjectId id = user.getId();
+                if (id != null) {
+                    delete_User_by_id(id);
+                    return true; // Deleted successfully
+                }
+            }
+            // User not found or id is null
+            return false;
+        } catch (Exception e) {
+            log.error("Error deleting user by username: {}", username, e);
+            return false;
+        }
+    }
+
 }

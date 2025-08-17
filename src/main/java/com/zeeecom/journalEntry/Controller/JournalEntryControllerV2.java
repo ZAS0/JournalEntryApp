@@ -66,7 +66,7 @@ public class JournalEntryControllerV2 {
         try {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
             var entry = mapper.toEntity(entryDto);
-            journalEntryServices.SaveEntry(entry, userName);
+            journalEntryServices.SaveEntry(entry,userName);
             return new ResponseEntity<>(mapper.toDTO(entry), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -104,17 +104,18 @@ public class JournalEntryControllerV2 {
                     @ApiResponse(responseCode = "200", description = "Journal entry updated successfully"),
                     @ApiResponse(responseCode = "404", description = "Journal entry not found or not owned by user")
             })
-    public ResponseEntity<JournalEntryDto> updateById(@PathVariable ObjectId myid,
+    public ResponseEntity<JournalEntryDto> updateById(@PathVariable String myid,
                                                       @RequestBody JournalEntryRequestDto newEntryDto) {
+        ObjectId myidObjectId=new ObjectId(myid);
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userServices.find_by_userName(userName);
 
         boolean ownsEntry = user.getJournalEntries()
                 .stream()
-                .anyMatch(x -> x.getId().equals(myid));
+                .anyMatch(x -> x.getId().equals(myidObjectId));
         if (!ownsEntry) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-        Optional<JournalEntry> journal = journalEntryServices.find_by_id(myid);
+        Optional<JournalEntry> journal = journalEntryServices.find_by_id(myidObjectId);
         if (journal.isPresent()) {
             var existing = journal.get();
 
@@ -141,9 +142,10 @@ public class JournalEntryControllerV2 {
                     @ApiResponse(responseCode = "204", description = "Journal entry deleted"),
                     @ApiResponse(responseCode = "404", description = "Journal entry not found or not owned by user")
             })
-    public ResponseEntity<Void> deleteById(@PathVariable("myid") ObjectId id) {
+    public ResponseEntity<Void> deleteById(@PathVariable("myid") String id) {
+        ObjectId objectId=new ObjectId(id);
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean removed = journalEntryServices.delete_by_id(id, userName);
+        boolean removed = journalEntryServices.delete_by_id(objectId, userName);
         return removed
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
