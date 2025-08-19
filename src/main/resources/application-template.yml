@@ -28,6 +28,14 @@ spring:
   #redis:
     #url: #paste your redis cloud URL
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: #Add these
+            client-secret: #Add these
+
   kafka:
     #Add your kafka properties here using gpt
 
