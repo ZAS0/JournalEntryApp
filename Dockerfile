@@ -1,29 +1,36 @@
-# Use Java 17 JDK from Eclipse Temurin
-FROM eclipse-temurin:17-jdk-alpine
+# 1️Base image with Java 17 JDK
+FROM eclipse-temurin:17-jdk-alpine AS build
 
-# Set working directory inside the container
+# 2️ Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml first (for dependency caching)
+# 3️ Copy only Maven wrapper and pom.xml first
+# This allows caching dependencies separately
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-# Copy source code
-COPY src ./src
-
-# Make Maven wrapper executable
+# 4️ Make Maven wrapper executable
 RUN chmod +x mvnw
 
-# Build the Spring Boot application (skip tests for faster builds)
+# 5️ Download dependencies (caches this layer)
+RUN ./mvnw dependency:go-offline -B
+
+# 6️ Copy source code
+COPY src ./src
+
+# 7️ Build the Spring Boot app (skip tests for faster build)
 RUN ./mvnw clean package -DskipTests
 
-# Copy the built jar to a standard location
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} /app/app.jar
+# 8️ Use a smaller image for runtime
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
 
-# Expose the port your app will run on
+# 9️ Copy built jar from build stage
+COPY --from=build /app/target/*.jar app.jar
+
+#  Expose port
 EXPOSE 8080
 
-# Set the entrypoint to run the Spring Boot app
+# Run the Spring Boot app
 ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
