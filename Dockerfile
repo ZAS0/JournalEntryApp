@@ -1,36 +1,45 @@
-# 1️Base image with Java 17 JDK
+# 1️⃣ Build stage with Java 17
 FROM eclipse-temurin:17-jdk-alpine AS build
 
-# 2️ Set working directory
+# 2️⃣ Set working directory
 WORKDIR /app
 
-# 3️ Copy only Maven wrapper and pom.xml first
-# This allows caching dependencies separately
+# 3️⃣ Copy Maven wrapper and pom.xml first (for caching)
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-# 4️ Make Maven wrapper executable
+# 4️⃣ Make Maven wrapper executable
 RUN chmod +x mvnw
 
-# 5️ Download dependencies (caches this layer)
+# 5️⃣ Download dependencies (caches this layer)
 RUN ./mvnw dependency:go-offline -B
 
-# 6️ Copy source code
+# 6️⃣ Copy source code
 COPY src ./src
 
-# 7️ Build the Spring Boot app (skip tests for faster build)
+# 7️⃣ Build the Spring Boot app (skip tests)
 RUN ./mvnw clean package -DskipTests
 
-# 8️ Use a smaller image for runtime
+# 8️⃣ Runtime stage
 FROM eclipse-temurin:17-jdk-alpine
+
+# Install shadow package to modify users/groups
+RUN apk add --no-cache shadow
+
 WORKDIR /app
 
-# 9️ Copy built jar from build stage
+# 9️⃣ Add default app user to group 1000 (needed to access Render secret files)
+RUN usermod -a -G 1000 nobody
+
+# 10️⃣ Copy built jar from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-#  Expose port
+# 11️⃣ Expose port
 EXPOSE 8080
 
-# Run the Spring Boot app
-ENTRYPOINT ["sh", "-c", "ls -l /app/ca.jks && java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
+# 12️⃣ Set default user to nobody (non-root)
+USER nobody
+
+# 13️⃣ Run the Spring Boot app and verify secret file access
+ENTRYPOINT ["sh", "-c", "whoami && ls -l /etc/secrets/ca.jks && java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
