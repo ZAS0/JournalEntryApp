@@ -2,6 +2,7 @@ package com.zeeecom.journalEntry.entity;
 
 import com.zeeecom.journalEntry.Enums.Sentiment;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @Document(collection = "journals")
 @Data //This is Through Lombok,which generate getter,setter,constructor at run time.
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class JournalEntry {
     
     @Id
