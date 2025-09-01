@@ -60,7 +60,7 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
 
 server:
-  port: ${SERVER_PORT}
+  port: ${SERVER_PORT:8080}
 
 weather:
   api:
