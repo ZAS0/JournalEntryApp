@@ -24,13 +24,12 @@ RUN ./mvnw clean package -DskipTests
 # 8️⃣ Runtime stage
 FROM eclipse-temurin:17-jdk-alpine
 
-# Install shadow package to modify users/groups
-RUN apk add --no-cache shadow
+# 9️⃣ Install shadow package and create group 1000
+RUN apk add --no-cache shadow \
+    && addgroup -g 1000 secretgroup \
+    && adduser -D -G secretgroup nobody
 
 WORKDIR /app
-
-# 9️⃣ Add default app user to group 1000 (needed to access Render secret files)
-RUN usermod -a -G 1000 nobody
 
 # 10️⃣ Copy built jar from build stage
 COPY --from=build /app/target/*.jar app.jar
@@ -38,7 +37,7 @@ COPY --from=build /app/target/*.jar app.jar
 # 11️⃣ Expose port
 EXPOSE 8080
 
-# 12️⃣ Set default user to nobody (non-root)
+# 12️⃣ Run as secure user
 USER nobody
 
 # 13️⃣ Run the Spring Boot app and verify secret file access
