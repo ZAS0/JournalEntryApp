@@ -58,6 +58,14 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- Lombok-MapStruct Binding -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok-mapstruct-binding</artifactId>
+			<version>0.2.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- MongoDB Driver -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
@@ -115,17 +123,25 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<annotationProcessorPaths>
-						<!-- MapStruct -->
-						<path>
-							<groupId>org.mapstruct</groupId>
-							<artifactId>mapstruct-processor</artifactId>
-							<version>${org.mapstruct.version}</version>
-						</path>
 						<!-- Lombok -->
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 							<version>1.18.34</version>
+						</path>
+
+						<!-- Lombok-MapStruct Binding -->
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok-mapstruct-binding</artifactId>
+							<version>0.2.0</version>
+						</path>
+
+						<!-- MapStruct -->
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
