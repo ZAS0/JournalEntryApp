@@ -26,14 +26,17 @@ FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-# 9️⃣ Copy built jar from build stage
+# COPY built jar from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# 1️⃣0️⃣ Expose port
+# COPY the embedded ca.jks into image
+COPY ca.jks /app/ca.jks
+
+# Expose port
 EXPOSE 8080
 
-# 1️⃣1️⃣ Run as root (to access secret files without permission issues)
+# Run as root to avoid permission issues with embedded file
 USER root
 
-# 1️⃣2️⃣ Run the Spring Boot app and verify secret file access
-ENTRYPOINT ["sh", "-c", "whoami && ls -l /etc/secrets/ca.jks && java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
+# Run the Spring Boot app and verify the embedded ca.jks file
+ENTRYPOINT ["sh", "-c", "whoami && ls -l /app/ca.jks && java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
