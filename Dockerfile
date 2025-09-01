@@ -24,21 +24,16 @@ RUN ./mvnw clean package -DskipTests
 # 8️⃣ Runtime stage
 FROM eclipse-temurin:17-jdk-alpine
 
-# 9️⃣ Install shadow package and create group 1000
-RUN apk add --no-cache shadow \
-    && addgroup -g 1000 secretgroup \
-    && adduser -D -G secretgroup nobody
-
 WORKDIR /app
 
-# 10️⃣ Copy built jar from build stage
+# 9️⃣ Copy built jar from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# 11️⃣ Expose port
+# 1️⃣0️⃣ Expose port
 EXPOSE 8080
 
-# 12️⃣ Run as secure user
-USER nobody
+# 1️⃣1️⃣ Run as root (to access secret files without permission issues)
+USER root
 
-# 13️⃣ Run the Spring Boot app and verify secret file access
+# 1️⃣2️⃣ Run the Spring Boot app and verify secret file access
 ENTRYPOINT ["sh", "-c", "whoami && ls -l /etc/secrets/ca.jks && java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
