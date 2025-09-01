@@ -33,7 +33,6 @@ build/
 .vscode/
 
 # properties and yml file
-src/main/resources/application-local.yml
 src/main/resources/application-dev.yml
 src/main/resources/application-prod.yml
 
@@ -41,4 +40,5 @@ src/main/resources/application-prod.yml
 .env
 *.env
 
-
+#jks
+ca.jks
