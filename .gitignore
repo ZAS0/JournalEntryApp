@@ -41,7 +41,4 @@ src/main/resources/application-prod.yml
 .env
 *.env
 
-# Ignore keystore/truststore files
-/etc/
-*.jks
-*.p12
+
