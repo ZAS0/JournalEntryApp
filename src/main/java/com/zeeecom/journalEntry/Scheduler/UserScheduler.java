@@ -7,7 +7,6 @@ import com.zeeecom.journalEntry.entity.JournalEntry;
 import com.zeeecom.journalEntry.entity.Users;
 import com.zeeecom.journalEntry.model.SentimentData;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +23,10 @@ public class UserScheduler {
 
     private EmailService emailService;
     private UserRepositoryImpl userRepository;
-    private KafkaTemplate<String, SentimentData> kafkaTemplate;
 
-    public UserScheduler(EmailService emailService, UserRepositoryImpl userRepository, KafkaTemplate<String, SentimentData> kafkaTemplate) {
+    public UserScheduler(EmailService emailService, UserRepositoryImpl userRepository) {
         this.emailService = emailService;
         this.userRepository = userRepository;
-        this.kafkaTemplate = kafkaTemplate;
     }
 
     //@Scheduled(cron ="0 * * ? * *") --for every second
@@ -56,12 +53,9 @@ public class UserScheduler {
             if (mostFrequentSentiment != null) {
                 SentimentData sentimentData = SentimentData.builder().email(user.getEmail()).sentiment("Sentiment for last 7 dyas: " + mostFrequentSentiment).build();
                 try {
-                    //Kafka producer - producer sent data to kafka topic weekly-sentiments
-                    kafkaTemplate.send("weekly-sentiments", sentimentData.getEmail(), sentimentData);
-                } catch (Exception e) {
-                    //Kafka FallBack - if kafka don't work then do this
-                    log.error("Kafka didnt worked so sending mail directly", e);
                     emailService.sendEmail(sentimentData.getEmail(), "Sentiment for previous week", sentimentData.getSentiment());
+                } catch (Exception e) {
+                    log.error("Kafka didnt worked so sending mail directly", e);
                 }
             }
         }
