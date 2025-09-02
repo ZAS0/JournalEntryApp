@@ -22,10 +22,6 @@ public class SwaggerConfig {
                                 .title("Journal Application APIs")
                                 .description("By ZAS")
                 )
-                .servers(List.of(
-                        new Server().url("http://localhost:8080/").description("local"),
-                        new Server().url("http://localhost:8082/").description("Live")
-                ))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components().addSecuritySchemes(
                         "bearerAuth", new SecurityScheme()
