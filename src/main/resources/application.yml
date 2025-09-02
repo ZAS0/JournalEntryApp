@@ -3,4 +3,4 @@ spring:
   application:
     name: JournalApp
   profiles:
-    active: prod #Name of the profile to run
+    active: ${ACTIVE_PROFILE} #Name of the profile to run
